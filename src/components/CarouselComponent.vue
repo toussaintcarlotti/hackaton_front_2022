@@ -10,8 +10,33 @@
     :navigation="true"
     :modules="modules"
     class="mySwiper"
+    :breakpoints="{
+      '@0.00': {
+        slidesPerView: 1,
+        spaceBetween: 10,
+      },
+      '@0.75': {
+        slidesPerView: 2,
+        spaceBetween: 20,
+      },
+      '@1.00': {
+        slidesPerView: 3,
+        spaceBetween: 40,
+      },
+      '@1.50': {
+        slidesPerView: 4,
+        spaceBetween: 50,
+      },
+    }"
   >
-    <swiper-slide class="rounded-xl border" v-for="item in items" :key="item">{{ item.title }}</swiper-slide>
+    <swiper-slide class="rounded-xl border block" v-for="item in items" :key="item">
+      <div class="h-40">
+        <img style="object-fit: contain" :src="item.image" alt="">
+      </div>
+      {{ item.title }}
+
+
+    </swiper-slide>
   </swiper>
 
   <p class="append-buttons"></p>

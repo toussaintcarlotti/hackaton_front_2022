@@ -104,11 +104,11 @@ export default defineComponent({
       if (!this.form.movies.map((mymovie) => { return mymovie.title}).includes(movie.title)){
         this.form.movies.push({
           'id': movie.id,
-          'title': movie.title
+          'title': movie.title,
         });
       }
-
     },
+
     addActor(item) {
       if (!this.form.actors.map((actor) => { return actor.name}).includes(item.name)) {
         this.form.actors.push(item);
@@ -138,9 +138,18 @@ export default defineComponent({
 
       await api.get("recommandation").then((res) => {
         this.recommandationList = res.data;
+        this.recommandationList.map((movie) => {
+          this.addMovieImage(movie)
+        })
         this.state.recSuccess = true;
       });
 
+    },
+    async addMovieImage(mymovie){
+      console.log(mymovie);
+      await api.get("films/thumbnail?id="+mymovie.id).then((res) => {
+        this.recommandationList.find( movie => movie.id === mymovie.id).image = res.data.thumbnail;
+      });
     },
     validateTypeSelection() {
       this.endSelectionType = true;
