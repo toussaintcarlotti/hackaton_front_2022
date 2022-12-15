@@ -5,8 +5,8 @@
       <input id="movies" class="border-2 border-gray-300 text-gray-600 rounded-lg p-2 w-full"
              @keyup="searchMovies" v-model="search" type="text">
       <div v-if="state.success" class="p-1 absolute border w-full bg-white z-50 rounded-xl border mt-2">
-        <div class="py-1 px-3 rounded-xl space-y-2 " v-if="result.length>0" @click="selectMovie">
-          <div class="hover:bg-gray-100 cursor-pointer" v-for="movie in result" :key="movie">{{ movie.title }}</div>
+        <div class="py-1 px-3 rounded-xl space-y-2 " v-if="result.length>0" >
+          <div class="hover:bg-gray-100 cursor-pointer" v-for="movie in result" :key="movie" @click="selectMovie(movie)">{{ movie.title }}</div>
         </div>
         <div v-else>Aucun résultats</div>
       </div>
@@ -48,8 +48,8 @@ export default {
         });
       }
     },
-    selectMovie() {
-      this.$emit("movie-selected", this.result);
+    selectMovie(movie) {
+      this.$emit("movie-selected", movie);
       this.state.success = false
       this.result = [];
       this.search = "";
