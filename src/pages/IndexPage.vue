@@ -10,8 +10,8 @@
           </div>
         </div>
       </div>
-      <div class="flex justify-center mt-12">
-        <q-btn class="text-lg px-10 py-5" label="Valider mes choix" @click="validateTypeSelection" rounded />
+      <div class="flex justify-center mt-12 ">
+        <q-btn class="text-lg px-10 py-5 " label="Valider mes choix" @click="validateTypeSelection" rounded />
       </div>
     </div>
     <div v-else>

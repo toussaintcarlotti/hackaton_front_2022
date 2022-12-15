@@ -9,13 +9,13 @@ const conflictingClasses = [
 // The plugin takes an object where the keys are the selectors and the values are the properties (or list of properties) to remove or all properties with "*".
 const removeObj = {
   ...Object.fromEntries(conflictingClasses.map(cc => [`.${cc}`, "*"])), // Removes all properties from conflicting classes
-  ".row, .column, .flex": "flex-wrap" // Turns out rules defining multiple classes must be targetted as a whole.
 };
 
 module.exports = {
   plugins: [
-    require("postcss-remove-declaration")({ remove: removeObj }), // The plugin must be placed before Tailwind import!
     require("tailwindcss"),
-    require('autoprefixer')
+    require('autoprefixer'),
+    // require("postcss-remove-declaration")({ remove: removeObj }) // The plugin must be placed before Tailwind import!
   ]
 }
+
