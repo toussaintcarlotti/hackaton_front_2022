@@ -8,7 +8,7 @@
         {{ item.name }}
         <q-btn flat round color="red" icon="close" size="xs" @click="removeItem(item)" />
       </div>
-      <input @focusout="reset" ref="input" id="input" class="border-none h-max rounded" @keyup="searchActor(input)" v-model="input" type="text">
+      <input ref="input" id="input" class="border-none h-max rounded" @keyup="searchActor(input)" v-model="input" type="text">
     </div>
     <div v-if="actorSearching" class="p-1 absolute border w-full bg-white rounded-xl border mt-2 z-max">
       <div v-if="actorsListSearch.length > 0" >
@@ -50,6 +50,7 @@ export default {
     pushItem(item){
       this.$emit('item-selected', item)
       this.input = ''
+      this.reset();
     },
     removeItem(item){
       this.$emit('item-deleted', item)
