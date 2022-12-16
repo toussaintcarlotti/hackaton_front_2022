@@ -56,8 +56,8 @@
 
           <q-card-section class="q-pt-none">
            <p class="text-justify">{{ movie.description }}</p>
-            <div class="flex justify-center mt-4">
-              <a target="_blank" :href="movie.preview_link" >
+            <div v-if="movie.preview_link" class="flex justify-center mt-4">
+              <a download :href="movie.preview_link" >
                 <q-btn label="Prévisualisation" />
               </a>
             </div>
