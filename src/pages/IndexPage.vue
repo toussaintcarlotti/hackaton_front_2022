@@ -37,7 +37,7 @@
         <q-btn class="text-lg px-10 py-5 " label="Valider mes choix" @click="validateTypeSelection" rounded />
       </div>
     </div>
-    <div v-else-if="state.recSuccess === false">
+    <div v-else-if="state.recommand.success === false">
       <div class="flex justify-between">
         <q-btn icon="arrow_back" class="text-md px-6 py-3" label="Modifier les genres"
                @click="this.endSelectionType = false" />
@@ -57,14 +57,14 @@
                         @movie-selected="addMovie" :movies="form.movies" />
         </div>
         <div class="flex justify-center my-8">
-          <q-btn class="mx-auto mt-2 py-5 px-10 text-lg" rounded label="Trouver des films" @click="logData" />
+          <q-btn class="mx-auto mt-2 py-5 px-10 text-lg" rounded label="Trouver des films" @click="getRecommand" />
         </div>
       </div>
     </div>
-    <div v-else-if="state.recSuccess">
+    <div v-else-if="state.recommand.success">
       <div class="flex flex-wrap justify-center md:justify-between">
         <q-btn icon="arrow_back" class="text-md px-6 py-3 my-4" label="Modifier les critères"
-               @click="this.state.recSuccess = false" />
+               @click="this.state.recommand.success = false" />
         <q-btn-dropdown icon="filter_alt" class="text-md px-6 py-3 my-4" label="Filtrer">
           <div class="row no-wrap q-pa-md">
             <div class="column">
@@ -79,11 +79,12 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, onBeforeUnmount, ref } from "vue";
 import SearchMovies from "components/SearchMovies.vue";
 import { api } from "boot/axios";
 import SearchActors from "components/SearchActors";
 import CarouselComponent from "components/CarouselComponent";
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   name: "IndexPage",
@@ -103,14 +104,21 @@ export default defineComponent({
       state: {
         getTypeSuccess: false,
         getActorSuccess: false,
-        recSuccess: false
+        recommand:{
+          success: false,
+          loading: false
+        }
       }
     };
   },
   setup() {
+
+    const $q = useQuasar()
+
     return {
-      alert: ref(false)
-    };
+      $q,
+      alert: ref(false),
+    }
   },
   mounted() {
     this.getTypes();
@@ -149,8 +157,10 @@ export default defineComponent({
       const index = this.form.actors.indexOf(item);
       this.form.actors.splice(index, 1);
     },
-    async logData() {
-      this.state.recSuccess = false;
+    async getRecommand() {
+      this.$q.loading.show()
+      this.state.recommand.success = false;
+      this.state.recommand.loading = true;
       this.recommandationList = [];
 
       const types = { "genres": this.form.types };
@@ -174,7 +184,9 @@ export default defineComponent({
 
       await api.get("recommandation").then((res) => {
         this.recommandationList = res.data;
-        this.state.recSuccess = true;
+        this.state.recommand.loading = false;
+        this.state.recommand.success = true;
+        this.$q.loading.hide()
       });
 
     },
