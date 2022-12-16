@@ -28,7 +28,7 @@
       </div>
     </div>
     <div v-else-if="state.recSuccess === false">
-      <div >
+      <div class="flex justify-between">
         <q-btn icon="arrow_back" class="text-md px-6 py-3" label="Modifier les genres" @click="this.endSelectionType = false" />
       </div>
 
@@ -41,7 +41,9 @@
                          :items="form.actors" />
         </div>
         <div>
-          <SearchMovies class="pt-4 md:pt-0" @movie-selected="addMovie" :movies="form.movies" />
+          <SearchMovies class="pt-4 md:pt-0"
+                        @item-deleted="removeMovie"
+                        @movie-selected="addMovie" :movies="form.movies" />
         </div>
         <div class="flex justify-center my-8">
           <q-btn class="mx-auto mt-2 py-5 px-10 text-lg" rounded label="Trouver des films" @click="logData" />
@@ -49,7 +51,16 @@
       </div>
     </div>
     <div v-else-if="state.recSuccess">
-      <q-btn icon="arrow_back" class="text-md px-6 py-3 my-4" label="Modifier les critères" @click="this.state.recSuccess = false" />
+      <div class="flex flex-wrap justify-center md:justify-between">
+        <q-btn icon="arrow_back" class="text-md px-6 py-3 my-4" label="Modifier les critères" @click="this.state.recSuccess = false" />
+        <q-btn-dropdown icon="filter_alt" class="text-md px-6 py-3 my-4" label="Filtrer">
+          <div class="row no-wrap q-pa-md">
+            <div class="column">
+              <div class="text-h6 q-mb-md">Settings</div>
+            </div>
+          </div>
+        </q-btn-dropdown>
+      </div>
       <CarouselComponent :items="this.recommandationList" />
     </div>
   </div>
@@ -75,6 +86,7 @@ export default defineComponent({
       typesList: [],
       actorsList: [],
       recommandationList: [],
+      recommandationTypeList: [],
       endSelectionType: false,
       state:{
         getTypeSuccess: false,
@@ -108,7 +120,10 @@ export default defineComponent({
         });
       }
     },
-
+    removeMovie(movie){
+      const index = this.form.movies.indexOf(movie);
+      this.form.movies.splice(index, 1);
+    },
     addActor(item) {
       if (!this.form.actors.map((actor) => { return actor.name}).includes(item.name)) {
         this.form.actors.push(item);
@@ -138,19 +153,11 @@ export default defineComponent({
 
       await api.get("recommandation").then((res) => {
         this.recommandationList = res.data;
-        this.recommandationList.map((movie) => {
-          this.addMovieImage(movie)
-        })
         this.state.recSuccess = true;
       });
 
     },
-    async addMovieImage(mymovie){
-      console.log(mymovie);
-      await api.get("films/thumbnail?id="+mymovie.id).then((res) => {
-        this.recommandationList.find( movie => movie.id === mymovie.id).image = res.data.thumbnail;
-      });
-    },
+
     validateTypeSelection() {
       this.endSelectionType = true;
     },

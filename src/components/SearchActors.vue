@@ -8,12 +8,13 @@
         {{ item.name }}
         <q-btn flat round color="red" icon="close" size="xs" @click="removeItem(item)" />
       </div>
-      <input ref="input" id="input" class="border-none h-max rounded" @keyup="searchActor(input)" v-model="input" type="text">
+      <input ref="input" id="input" class="border-none h-max rounded" @keyup="searchActor(input)" v-model="input"
+             type="text">
     </div>
     <div v-if="actorSearching" class="p-1 absolute border w-full bg-white rounded-xl border mt-2 z-max">
-      <div v-if="actorsListSearch.length > 0" >
+      <div v-if="actorsListSearch.length > 0">
         <div v-for="actor in actorsListSearch" :key="actor"
-             class="hover:bg-gray-100 cursor-pointer py-1 px-3 rounded-xl" @click="pushItem(actor)" >
+             class="hover:bg-gray-100 cursor-pointer py-1 px-3 rounded-xl" @click="pushItem(actor)">
           {{ actor.name }}
         </div>
       </div>
@@ -27,48 +28,49 @@ import { api } from "boot/axios";
 
 export default {
   name: "SearchActors",
-  props:{
-    items:{
-      type: Array,
+  props: {
+    items: {
+      type: Array
     },
-    label:{
+    label: {
       type: String,
-      default: 'Label'
+      default: "Label"
     },
-    actorsList:{
-      type: Array,
+    actorsList: {
+      type: Array
     }
   },
-  data(){
-    return{
-      input: '',
+  data() {
+    return {
+      input: "",
       actorSearching: false,
-      actorsListSearch: [],
-    }
+      actorsListSearch: []
+    };
   },
-  methods:{
-    pushItem(item){
-      this.$emit('item-selected', item)
-      this.input = ''
+  methods: {
+    pushItem(item) {
+      this.$emit("item-selected", item);
+      this.input = "";
       this.reset();
     },
-    removeItem(item){
-      this.$emit('item-deleted', item)
+    removeItem(item) {
+      this.$emit("item-deleted", item);
     },
-    changeValue(item){
-      this.$emit('change-value', item)
+    changeValue(item) {
+      this.$emit("change-value", item);
     },
-    async searchActor(actor){
+    async searchActor(actor) {
       await api.get("acteurs/autocomplete?name=" + actor).then((res) => {
-        this.actorsListSearch = res.data.splice(0,15)
-        this.actorSearching = true
+        this.actorsListSearch = res.data.splice(0, 15);
+        this.actorSearching = true;
       });
+      if (actor === "") {
+        this.reset();
+      }
     },
-    reset(){
-      setTimeout(()=>{
-        this.actorSearching = false
-        this.actorsListSearch = []
-      },200)
+    reset() {
+      this.actorSearching = false;
+      this.actorsListSearch = [];
     }
   }
 

@@ -7,6 +7,8 @@
     :pagination="{
       type: 'fraction',
     }"
+    @navigationNext="sequanceAddImage"
+    @navigationPrev="this.loadedCount -= 1"
     :navigation="true"
     :modules="modules"
     class="mySwiper"
@@ -29,12 +31,19 @@
       },
     }"
   >
-    <swiper-slide class="rounded-xl border block" v-for="item in items" :key="item">
-      <div class="h-40">
-        <img style="object-fit: contain" :src="item.image" alt="">
-      </div>
-      {{ item.title }}
-
+    <swiper-slide class="rounded-xl border block" v-for="movie in movies" :key="movie">
+      <a target="_blank" :href="movie.url">
+        <div class="h-40">
+          <img v-if="movie.image" style="object-fit: contain" :src="movie.image" alt="">
+          <img v-else style="object-fit: contain" src="../assets/default-movie-img.jpg" alt="">
+        </div>
+        <div>
+          {{ movie.title }}
+        </div>
+        <div class="flex flex-wrap gap-1 p-2 mt-2">
+          <div class="rounded-lg text-sm bg-blue-50 text-blue-400 px-2" v-for="type in movie.types" :key="type">{{ type.name }}</div>
+        </div>
+      </a>
 
     </swiper-slide>
   </swiper>
@@ -54,6 +63,7 @@ import "swiper/css/navigation";
 
 // import required modules
 import { Pagination, Navigation } from "swiper";
+import { api } from "boot/axios";
 
 export default {
   components: {
@@ -65,11 +75,43 @@ export default {
       type: Array
     }
   },
+  data(){
+    return{
+      movies: [],
+      loadedCount: 0,
+      maxLoadedCount: 0
+    }
+  },
+  mounted() {
+    this.movies = this.items;
+    for (this.loadedCount = 0; this.loadedCount < 4; this.loadedCount++){
+      this.addMovieImage(this.movies[this.loadedCount])
+    }
+  },
   setup() {
     return {
       modules: [Pagination, Navigation],
     };
   },
+  methods:{
+    async addMovieImage(mymovie){
+      await api.get("films/infos?id="+mymovie.id).then((res) => {
+        let movie2 = this.movies.find( movie => movie.id === mymovie.id)
+        movie2.image = res.data.thumbnail;
+        movie2.url = res.data.url;
+        movie2.types = res.data.genres;
+        movie2.preview_link = res.data.preview_link
+      });
+    },
+    sequanceAddImage(){
+      this.loadedCount += 1;
+      if (this.loadedCount >= this.maxLoadedCount){
+        this.maxLoadedCount = this.loadedCount
+        this.addMovieImage(this.movies[this.loadedCount]);
+      }
+
+    }
+  }
 };
 </script>
 

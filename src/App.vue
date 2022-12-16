@@ -14,10 +14,6 @@
             <li>
               <router-link to="/" class="link">Menu</router-link>
             </li>
-            <li>
-              <router-link to="/lien" class="link">Lien</router-link>
-            </li>
-
           </ul>
         </div>
       </div>
