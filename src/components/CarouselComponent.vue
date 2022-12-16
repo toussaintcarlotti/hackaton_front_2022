@@ -31,7 +31,7 @@
       },
     }"
   >
-    <swiper-slide class="rounded-xl border block" v-for="movie in movies" :key="movie">
+    <swiper-slide class="rounded-xl border block mt-12" v-for="(movie, i) in movies" :key="movie">
       <a target="_blank" :href="movie.url">
         <div class="h-40">
           <img v-if="movie.image" style="object-fit: contain" :src="movie.image" alt="">
@@ -44,7 +44,30 @@
           <div class="rounded-lg text-sm bg-blue-50 text-blue-400 px-2" v-for="type in movie.types" :key="type">{{ type.name }}</div>
         </div>
       </a>
+      <div class="flex justify-center" @click="openDetail(movie, i)">
+        <q-btn color="warning" icon="visibility" />
+      </div>
 
+      <q-dialog v-model="alert[i]">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">{{ movie.title }}</div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none">
+           <p class="text-justify">{{ movie.description }}</p>
+            <div class="flex justify-center mt-4">
+              <a target="_blank" :href="movie.preview_link" >
+                <q-btn label="Prévisualisation" />
+              </a>
+            </div>
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn flat label="OK" color="primary" v-close-popup />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </swiper-slide>
   </swiper>
 
@@ -54,21 +77,23 @@
 // Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from "swiper/vue";
 
+
 // Import Swiper styles
 import "swiper/css";
 
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-
 // import required modules
 import { Pagination, Navigation } from "swiper";
 import { api } from "boot/axios";
+
 
 export default {
   components: {
     Swiper,
     SwiperSlide,
+
   },
   props:{
     items:{
@@ -79,7 +104,8 @@ export default {
     return{
       movies: [],
       loadedCount: 0,
-      maxLoadedCount: 0
+      maxLoadedCount: 0,
+      alert: [],
     }
   },
   mounted() {
@@ -101,7 +127,9 @@ export default {
         movie2.url = res.data.url;
         movie2.types = res.data.genres;
         movie2.preview_link = res.data.preview_link
+        movie2.description = res.data.description[Object.keys(res.data.description)[0]]
       });
+      this.alert.push(false)
     },
     sequanceAddImage(){
       this.loadedCount += 1;
@@ -109,9 +137,11 @@ export default {
         this.maxLoadedCount = this.loadedCount
         this.addMovieImage(this.movies[this.loadedCount]);
       }
-
-    }
-  }
+    },
+    openDetail(movie, i){
+      this.alert[i] = true
+    },
+  },
 };
 </script>
 
@@ -139,6 +169,8 @@ export default {
   -ms-flex-align: center;
   -webkit-align-items: center;
   align-items: center;
+  min-height: 400px;
+
 }
 
 .swiper-slide img {
@@ -150,7 +182,7 @@ export default {
 
 .swiper {
   width: 100%;
-  height: 300px;
+  min-height: 500px;
   margin: 20px auto;
 }
 .append-buttons {
@@ -169,4 +201,6 @@ export default {
   margin: 0 10px;
   font-size: 13px;
 }
+
+
 </style>

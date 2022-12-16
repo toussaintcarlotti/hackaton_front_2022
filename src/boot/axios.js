@@ -1,7 +1,7 @@
 import { boot } from "quasar/wrappers";
 import axios from "axios";
 
-const api = axios.create({ baseURL: "https://rec-algo.carlotti-toussaint.com"});
+const api = axios.create({ baseURL: "http://127.0.0.1:8000"});
 
 api.interceptors.response.use(
   response => (response),

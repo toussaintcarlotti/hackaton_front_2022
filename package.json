@@ -21,8 +21,11 @@
     "quasar": "^2.6.0",
     "swiper": "^8.4.5",
     "tough-cookie": "^4.1.2",
+    "video.js": "^7.20.3",
     "vue": "^3.0.0",
+    "vue-core-video-player": "^0.2.0",
     "vue-router": "^4.0.0",
+    "vue-videojs7": "^1.0.2",
     "zlib": "^1.0.5"
   },
   "devDependencies": {

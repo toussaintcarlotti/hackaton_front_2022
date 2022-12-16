@@ -14,12 +14,22 @@
     </q-dialog>
 
     <div v-if="!endSelectionType">
-      <div v-if="state.getTypeSuccess" class="h-[70vh] w-full shadow-lg rounded-2xl p-4 flex flex-wrap justify-evenly gap-4 overflow-y-scroll" >
+      <div v-if="state.getTypeSuccess"
+           class="h-[70vh] w-full shadow-lg rounded-2xl p-4 flex flex-wrap justify-evenly gap-4 overflow-y-scroll">
         <div v-for="type in typesList" :key="type" @click="toggleSelectType(type.id)"
              class="type-item" :class="{'type-selected' :form.types.includes(type.id)}">
           <q-icon v-if="form.types.includes(type.id)" class="absolute ml-8 mt-4" name="check" />
           <div class="grid justify-items-center items-center h-full">
             {{ type.name }}
+          </div>
+        </div>
+      </div>
+      <div v-else class="h-[70vh] w-full shadow-lg rounded-2xl p-4 flex flex-wrap justify-evenly gap-4 overflow-y-scroll">
+        <div v-for="n in 10" :key="n"
+             class="type-item">
+          <div class="grid justify-items-center items-center h-full p-4 animate-pulse">
+            <div class="h-6 rounded w-full bg-gray-100 "></div>
+            <div class="h-6 rounded w-3/4 bg-gray-100"></div>
           </div>
         </div>
       </div>
@@ -29,16 +39,17 @@
     </div>
     <div v-else-if="state.recSuccess === false">
       <div class="flex justify-between">
-        <q-btn icon="arrow_back" class="text-md px-6 py-3" label="Modifier les genres" @click="this.endSelectionType = false" />
+        <q-btn icon="arrow_back" class="text-md px-6 py-3" label="Modifier les genres"
+               @click="this.endSelectionType = false" />
       </div>
 
       <div class="mt-8">
         <div class="relative">
           <SearchActors label="Acteurs"
-                         @item-selected="addActor"
-                         @item-deleted="removeActor"
-                         :actorsList="actorsList"
-                         :items="form.actors" />
+                        @item-selected="addActor"
+                        @item-deleted="removeActor"
+                        :actorsList="actorsList"
+                        :items="form.actors" />
         </div>
         <div>
           <SearchMovies class="pt-4 md:pt-0"
@@ -52,7 +63,8 @@
     </div>
     <div v-else-if="state.recSuccess">
       <div class="flex flex-wrap justify-center md:justify-between">
-        <q-btn icon="arrow_back" class="text-md px-6 py-3 my-4" label="Modifier les critères" @click="this.state.recSuccess = false" />
+        <q-btn icon="arrow_back" class="text-md px-6 py-3 my-4" label="Modifier les critères"
+               @click="this.state.recSuccess = false" />
         <q-btn-dropdown icon="filter_alt" class="text-md px-6 py-3 my-4" label="Filtrer">
           <div class="row no-wrap q-pa-md">
             <div class="column">
@@ -88,17 +100,17 @@ export default defineComponent({
       recommandationList: [],
       recommandationTypeList: [],
       endSelectionType: false,
-      state:{
+      state: {
         getTypeSuccess: false,
         getActorSuccess: false,
         recSuccess: false
       }
     };
   },
-  setup(){
-    return{
-      alert: ref(false),
-    }
+  setup() {
+    return {
+      alert: ref(false)
+    };
   },
   mounted() {
     this.getTypes();
@@ -113,19 +125,23 @@ export default defineComponent({
       this.form.types.splice(index, 1);
     },
     addMovie(movie) {
-      if (!this.form.movies.map((mymovie) => { return mymovie.title}).includes(movie.title)){
+      if (!this.form.movies.map((mymovie) => {
+        return mymovie.title;
+      }).includes(movie.title)) {
         this.form.movies.push({
-          'id': movie.id,
-          'title': movie.title,
+          "id": movie.id,
+          "title": movie.title
         });
       }
     },
-    removeMovie(movie){
+    removeMovie(movie) {
       const index = this.form.movies.indexOf(movie);
       this.form.movies.splice(index, 1);
     },
     addActor(item) {
-      if (!this.form.actors.map((actor) => { return actor.name}).includes(item.name)) {
+      if (!this.form.actors.map((actor) => {
+        return actor.name;
+      }).includes(item.name)) {
         this.form.actors.push(item);
       }
     },
@@ -137,18 +153,23 @@ export default defineComponent({
       this.state.recSuccess = false;
       this.recommandationList = [];
 
-      const types = {'genres': this.form.types}
-      const actors = {'acteurs': this.form.actors.map((actor) => { return actor.id})}
-      const movies = {'films': this.form.movies.map((movie) => { return movie.id})}
+      const types = { "genres": this.form.types };
+      const actors = {
+        "acteurs": this.form.actors.map((actor) => {
+          return actor.id;
+        })
+      };
+      const movies = {
+        "films": this.form.movies.map((movie) => {
+          return movie.id;
+        })
+      };
 
-      await api.post("genres", types).then((res) => {
-        console.log(res.data);
+      await api.post("genres", types).then(() => {
       });
-      await api.post("acteurs", actors).then((res) => {
-        console.log(res.data);
+      await api.post("acteurs", actors).then(() => {
       });
-      await api.post("films", movies).then((res) => {
-        console.log(res.data);
+      await api.post("films", movies).then(() => {
       });
 
       await api.get("recommandation").then((res) => {
@@ -161,27 +182,26 @@ export default defineComponent({
     validateTypeSelection() {
       this.endSelectionType = true;
     },
-    toggleSelectType(type){
-      if (!this.form.types.includes(type)){
-        this.form.types.push(type)
-      }else{
+    toggleSelectType(type) {
+      if (!this.form.types.includes(type)) {
+        this.form.types.push(type);
+      } else {
         const index = this.form.types.indexOf(type);
         this.form.types.splice(index, 1);
       }
     },
-    async getTypes(){
+    async getTypes() {
       await api.get("genres/list").then((res) => {
         this.typesList = res.data;
-        this.state.getTypeSuccess = true
+        this.state.getTypeSuccess = true;
       });
     },
-    async getActors(){
+    async getActors() {
       await api.get("acteurs/list").then((res) => {
         this.actorsList = res.data;
-        this.state.getActorSuccess = true
-        console.log(res.data);
+        this.state.getActorSuccess = true;
       });
-    },
+    }
 
   }
 });
@@ -193,7 +213,7 @@ export default defineComponent({
   cursor-pointer relative;
 }
 
-.type-selected{
+.type-selected {
   @apply opacity-40 border-green-700 border-2;
 }
 </style>
